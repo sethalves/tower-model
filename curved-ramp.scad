@@ -39,26 +39,6 @@ module spiral_ramp_section(inner_radius = 10,
     p5y = 0;
     p5z = tower_radius * cos(angle_start + angle_sweep);
 
-
-
-    /*
-    polyhedron(points=[[p0x, p0y, p0z],
-                       [p1x, p1y, p1z],
-                       [p2x, p2y, p2z],
-                       [p3x, p3y, p3z],
-                       [p0x, p0y + thickness, p0z],
-                       [p1x, p1y + thickness, p1z],
-                       [p2x, p2y + thickness, p2z],
-                       [p3x, p3y + thickness, p3z]],
-               faces=[[3, 2, 1, 0], // bottom
-                      [4, 5, 6, 7], // top
-                      [0, 4, 7, 3], // near
-                      [1, 2, 6, 5], // far
-                      [0, 1, 5, 4], // right
-                      [2, 3, 7, 6]] // left
-               );
-    */
-
     section_points = [[p0x, p0y, p0z],
                       [p1x, p1y, p1z],
                       [p2x, p2y, p2z],
@@ -110,32 +90,43 @@ module spiral_ramp_section(inner_radius = 10,
 inner_radius = 10;
 outer_radius = 20;
 tower_radius = 22;
-tower_height = 20;
+tower_height = 24;
 angle_sweep = 22.5;
 y_rise = 2;
 thickness = 1;
 
-/*
-for(n=[0:1:10])
-{
+combined = 1; // this can be overridden by the Makefile
+
+if (combined == 1) {
+    difference() {
+        for(nth=[0:1:23]) {
+            spiral_ramp_section(inner_radius = inner_radius,
+                                outer_radius = outer_radius,
+                                tower_radius = tower_radius,
+                                tower_height = tower_height,
+                                angle_start = floor( nth / 3.0 ) * angle_sweep,
+                                angle_sweep = angle_sweep,
+                                y_start = floor( nth / 3.0 ) * y_rise,
+                                y_rise = y_rise,
+                                thickness = thickness,
+                                part = nth - floor( nth / 3.0 ) * 3);
+        }
+        for(nth=[0:1:7]) {
+            rotate([0, angle_sweep * nth + angle_sweep / 2.0, 0])
+                translate([0, y_rise * nth + y_rise + 3, outer_radius-1])
+                cylinder(h=4, r=2, $fs=0.5);
+        }
+    }
+} else {
+    // do part of one pie-slice of the tower
     spiral_ramp_section(inner_radius = inner_radius,
                         outer_radius = outer_radius,
-                        angle_start = n*angle_sweep,
+                        tower_radius = tower_radius,
+                        tower_height = tower_height,
+                        angle_start = floor( nth / 3.0 ) * angle_sweep,
                         angle_sweep = angle_sweep,
-                        y_start = n*y_rise,
+                        y_start = floor( nth / 3.0 ) * y_rise,
                         y_rise = y_rise,
-                        thickness = thickness);
+                        thickness = thickness,
+                        part = nth - floor( nth / 3.0 ) * 3.0);
 }
-*/
-
-
-spiral_ramp_section(inner_radius = inner_radius,
-                    outer_radius = outer_radius,
-                    tower_radius = tower_radius,
-                    tower_height = tower_height,
-                    angle_start = floor( nth / 3.0 ) * angle_sweep,
-                    angle_sweep = angle_sweep,
-                    y_start = floor( nth / 3.0 ) * y_rise,
-                    y_rise = y_rise,
-                    thickness = thickness,
-                    part = nth - floor( nth / 3.0 ) * 3.0);
