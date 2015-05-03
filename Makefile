@@ -11,12 +11,12 @@ curved-ramp-parts/%.stl: curved-ramp.scad
 %.obj: %.stl
 	- ivcon $^ $@
 
-PARTS=$(foreach nth,0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24,curved-ramp-parts/${nth}.obj)
+PARTS=$(foreach nth,0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23,curved-ramp-parts/${nth}.obj)
 
 all: curved-ramp.obj
 
 curved-ramp.obj: $(PARTS)
-	wavefront-obj-tool -o $@ $^
+	wavefront-obj-tool -c -o $@ $^
 
 clean:
 	rm -rf *~ curved-ramp-parts curved-ramp.obj
